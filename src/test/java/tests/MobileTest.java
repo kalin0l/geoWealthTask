@@ -14,7 +14,7 @@ import java.time.Duration;
 public class MobileTest {
     private WebDriver driver;
     private MobileSearchPage searchPage;
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
 
 
     @BeforeMethod
@@ -31,7 +31,7 @@ public class MobileTest {
         searchPage.searchVolkswagenGolf4x4();
 
 
-
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(".item")));
         int total = searchPage.countAllResults();
         int vip = searchPage.countPromo("div.VIP");
