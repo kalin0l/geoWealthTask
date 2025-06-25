@@ -63,10 +63,38 @@ public class MobileSearchPage {
     }
 
     public int countAllResults() {
-        List<WebElement> results = driver.findElements(By.cssSelector("div.item"));
-        return results.size();
-    }
+        int totalResults = 0;
 
+        while (true) {
+            List<WebElement> resultsOnPage = driver.findElements(By.cssSelector(".item"));
+
+            for (WebElement result : resultsOnPage) {
+                String classes = result.getAttribute("class");
+                if (!classes.contains("fakti")) {
+                    totalResults++;
+                }
+            }
+
+            try {
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+                WebElement nextButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[contains(text(),'Напред')]")));
+                nextButton.click();
+
+                wait.until(ExpectedConditions.stalenessOf(resultsOnPage.get(0)));
+            } catch (TimeoutException | ElementClickInterceptedException e) {
+                try {
+                    WebElement firstPageBtn = driver.findElement(By.xpath("//a[@class='saveSlink ' and text()='1']"));
+                    firstPageBtn.click();
+                } catch (Exception ex) {
+                    System.out.println("Не може да се върне на първа страница: " + ex.getMessage());
+                }
+                break;
+            }
+        }
+
+        return totalResults;
+    }
+    
     public int countPromo(String promoClass) {
         return driver.findElements(By.cssSelector(promoClass)).size();
     }
